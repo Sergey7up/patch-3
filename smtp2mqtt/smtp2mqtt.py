@@ -146,6 +146,13 @@ class SMTP2MQTTHandler:
         # done!
         return "250 Message accepted for delivery"
 
+    async def handle_HELO(self, server, session, envelope, hostname):
+        # Set extended SMTP (ESMTP)
+        session.extended_smtp = True
+        log.debug(f"HELO received from {hostname}, extended SMTP enabled", extra={'uuid': 'main thread'})
+        session.host_name = hostname
+        return '250 {}'.format(server.hostname)
+
     def mqtt_publish(self, topic, payload, log_extra):
         if config["DEBUG"]:
             if (log.isEnabledFor(logging.DEBUG)): log.debug('Publishing [%s] to %s', payload, topic, extra=log_extra)
